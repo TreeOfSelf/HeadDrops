@@ -1,0 +1,56 @@
+# ============================================================================= #
+#                                                                               #
+#                                                                               #
+#   ██╗  ██╗███████╗ █████╗ ██████╗ ██████╗ ██████╗  ██████╗ ██████╗ ███████╗   #
+#   ██║  ██║██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔════╝   #
+#   ███████║█████╗  ███████║██║  ██║██║  ██║██████╔╝██║   ██║██████╔╝███████╗   #
+#   ██╔══██║██╔══╝  ██╔══██║██║  ██║██║  ██║██╔══██╗██║   ██║██╔═══╝ ╚════██║   #
+#   ██║  ██║███████╗██║  ██║██████╔╝██████╔╝██║  ██║╚██████╔╝██║     ███████║   #
+#   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝   #
+#                                                                               #
+#                                                                               #
+#           Source Code: https://github.com/evancolewright/HeadDrops            #
+#        Bug Reports: https://github.com/evancolewright/HeadDrops/issues        #
+#                                                                               #
+#                               VERSION 1.5.6                                   #
+# ============================================================================= #
+
+
+# If enabled, the head of a slain player will be added to the killer's inventory rather than dropping on the ground
+transport_to_killer_inventory: false
+
+# Configuration section for normal head drops (when a player dies of natural causes)
+# Available placeholders:
+# {PLAYER} - The player's name
+# {TIMESTAMP} - The formatted time that the player died.
+# Make sure all timestamps are fully uppercase!
+normal:
+  enabled: true
+  disabled_worlds:
+    - "disabledworld1"
+    - "disabledworld2"
+  drop_chance: 0.75
+  head:
+    name: "&a&l{PLAYER}'s &7&lHead"
+    lore:
+      - "&eDied on&7: &a&l{TIMESTAMP}"
+
+# Configuration section for slain head drops (when a player is slain by another player)
+# Available placeholders:
+# {PLAYER} - The player's name
+# {KILLER} - The person who killed the player
+# {MURDER_WEAPON} - The name of the item that was used to kill the player.
+# {TIMESTAMP} - The formatted time that the player was killed.
+# Make sure all timestamps are fully uppercase!
+slain:
+  enabled: true
+  disabled_worlds:
+    - "disabledworld1"
+    - "disabledworld2"
+  drop_chance: 0.5
+  head:
+    name: "&a&l{PLAYER}'s &7&lHead"
+    lore:
+      - "&eDied on&7: &f&l{TIMESTAMP}"
+      - "&eKilled by: &f&l{KILLER}"
+      - "&eKilled with: &f&l{MURDER_WEAPON}"

@@ -1,0 +1,11 @@
+com\github\evancolewright\headdrops\api\event\HeadDropEvent.class
+com\github\evancolewright\headdrops\HeadDropType.class
+com\github\evancolewright\headdrops\utilities\StringUtils.class
+com\github\evancolewright\headdrops\handlers\CacheHandler.class
+com\github\evancolewright\headdrops\utilities\HeadUtils.class
+com\github\evancolewright\headdrops\HeadDropsPlugin.class
+com\github\evancolewright\headdrops\model\PlayerHeadData.class
+com\github\evancolewright\headdrops\handlers\CacheHandler$LocationAdapter.class
+com\github\evancolewright\headdrops\HeadDropsListeners.class
+com\github\evancolewright\headdrops\handlers\CacheHandler$1.class
+com\github\evancolewright\headdrops\api\HeadDropsAPI.class
