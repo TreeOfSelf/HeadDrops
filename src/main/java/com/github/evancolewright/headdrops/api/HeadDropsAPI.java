@@ -30,7 +30,6 @@ public final class HeadDropsAPI
         NBTItem nbtItem = new NBTItem(itemStack);
 
         if(container.has(key , PersistentDataType.STRING) || (nbtItem.hasNBTData() && nbtItem.hasCustomNbtData() && nbtItem.getString("HeadDrops_Owner")!=null) ) {
-
             return true;
         }else{
             return false;

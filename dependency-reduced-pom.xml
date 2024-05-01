@@ -4,7 +4,7 @@
   <groupId>com.evancolewright</groupId>
   <artifactId>headdrops</artifactId>
   <name>HeadDrops</name>
-  <version>1.5.7</version>
+  <version>1.6.0</version>
   <description>A simple plugin that causes players to drop their heads on death.</description>
   <url>evancolewright.github.io</url>
   <build>

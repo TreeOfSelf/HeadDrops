@@ -1,6 +1,5 @@
 package com.github.evancolewright.headdrops.utilities;
 
-import com.github.evancolewright.headdrops.HeadDropType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -72,7 +71,7 @@ public final class HeadUtils
                     try {
                         jsonObjectTwo = (JSONObject) parserTwo.parse(jsonString);
                     } catch (ParseException e) {
-                        throw new RuntimeException(e);
+                        return null;
                     }
                     JSONObject texturesObject = (JSONObject) jsonObjectTwo.get("textures");
                     JSONObject skinObject = (JSONObject) texturesObject.get("SKIN");
@@ -88,41 +87,45 @@ public final class HeadUtils
         return null;
     }
 
-    public static ItemStack createPlayerHead(UUID playerUUID, Player killer, String displayName, List<String> lore)
+    public static ItemStack createPlayerHead(UUID playerUUID, Player killer, String displayName, List<String> lore, PlayerProfile blockOwner, boolean silkTouched)
     {
-
-        HeadDropType headType = killer == null ? HeadDropType.NORMAL : HeadDropType.SLAIN;
-        try {
-            getPlayerTexture(playerUUID);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         ItemStack playerHead = getVersionIndependentHead();
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
-        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
-        try {
-            String[] results = getPlayerTexture(playerUUID);
-            displayName = "&a&l"+results[0]+"'s &7&lHead";
-            URL url = new URL(results[1]);
-            PlayerTextures texture = profile.getTextures();
-            texture.setSkin(url);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        if (!silkTouched) {
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+            try {
+                String[] results = getPlayerTexture(playerUUID);
+                if (results != null) {
+                    displayName = "&a&l" + results[0] + "'s &7&lHead";
+                    URL url = new URL(results[1]);
+                    PlayerTextures texture = profile.getTextures();
+                    texture.setSkin(url);
+                    skullMeta.setOwnerProfile(profile);
+                }else{
+                    if (blockOwner != null) {
+                        skullMeta.setOwnerProfile(blockOwner);
+                    }
+                }
+            } catch (IOException e) {
+                if (blockOwner != null) {
+                    skullMeta.setOwnerProfile(blockOwner);
+                }
+            }
+        }else{
+            if (blockOwner!=null) {
+                skullMeta.setOwnerProfile(blockOwner);
+            }
         }
-        skullMeta.setOwnerProfile(profile);
-        //skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUUID));
+
         skullMeta.setDisplayName(replacePlaceHolders(displayName, playerUUID, killer));
         skullMeta.setLore(lore.stream()
                 .map(s -> replacePlaceHolders(s, playerUUID, killer))
                 .collect(Collectors.toList()));
 
-
-
         NamespacedKey key = new NamespacedKey("head-drop", "headdrop-user");
         skullMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, playerUUID.toString());
         playerHead.setItemMeta(skullMeta);
-
-
 
         return playerHead;
     }

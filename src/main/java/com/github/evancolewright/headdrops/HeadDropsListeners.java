@@ -9,17 +9,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.profile.PlayerProfile;
 
+import java.io.IOException;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 public final class HeadDropsListeners implements Listener
 {
@@ -48,7 +54,7 @@ public final class HeadDropsListeners implements Listener
                 victim.getUniqueId(),
                 killer,
                 configuration.getString(headType.getItemPath() + ".name"),
-                configuration.getStringList(headType.getItemPath() + ".lore")));
+                configuration.getStringList(headType.getItemPath() + ".lore"), null, false));
         Bukkit.getPluginManager().callEvent(headDropEvent);
         if (headDropEvent.isCancelled()) return;
         if (configuration.getBoolean("transport_to_killer_inventory") && headType == HeadDropType.SLAIN)
@@ -66,15 +72,104 @@ public final class HeadDropsListeners implements Listener
     }
 
     @EventHandler
+    public void onHeadPistonedRetracted(BlockPistonRetractEvent event)
+    {
+        for (Block block : event.getBlocks()) {
+
+            Location location = block.getLocation();
+            Optional<PlayerHeadData> playerHeadData = this.cacheHandler.getPlayerHeadData(location);
+            if (playerHeadData.isPresent()) {
+                PlayerProfile owner = null;
+                try {
+                    Skull skull = (Skull) block.getState();
+                    owner = skull.getOwnerProfile();
+                } catch (Exception e) {
+                    //
+                }
+
+                block.setType(Material.AIR);
+                block.getWorld().dropItemNaturally(location, playerHeadData.get().toItemStack(owner, true));
+                this.cacheHandler.removePlayerHeadData(location);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onHeadPistoned(BlockPistonExtendEvent event)
+    {
+        for (Block block : event.getBlocks()) {
+
+            Location location = block.getLocation();
+            Optional<PlayerHeadData> playerHeadData = this.cacheHandler.getPlayerHeadData(location);
+            if (playerHeadData.isPresent()) {
+                PlayerProfile owner = null;
+                try {
+                    Skull skull = (Skull) block.getState();
+                    owner = skull.getOwnerProfile();
+                } catch (Exception e) {
+                    //
+                }
+
+                block.setType(Material.AIR);
+                block.getWorld().dropItemNaturally(location, playerHeadData.get().toItemStack(owner, true));
+                this.cacheHandler.removePlayerHeadData(location);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onHeadExploded(EntityExplodeEvent event)
+    {
+        for (Block block : event.blockList()) {
+
+            Location location = block.getLocation();
+            Optional<PlayerHeadData> playerHeadData = this.cacheHandler.getPlayerHeadData(location);
+            if (playerHeadData.isPresent()) {
+                PlayerProfile owner = null;
+                try {
+                    Skull skull = (Skull) block.getState();
+                    owner = skull.getOwnerProfile();
+                } catch (Exception e) {
+                    //
+                }
+
+                block.setType(Material.AIR);
+                block.getWorld().dropItemNaturally(location, playerHeadData.get().toItemStack(owner, true));
+                this.cacheHandler.removePlayerHeadData(location);
+            }
+        }
+    }
+
+    @EventHandler
     public void onHeadBreak(BlockBreakEvent event)
     {
+
         Block block = event.getBlock();
+
         Location location = block.getLocation();
         Optional<PlayerHeadData> playerHeadData = this.cacheHandler.getPlayerHeadData(location);
         if (!playerHeadData.isPresent())
             return;
+
+        PlayerProfile owner = null;
+
+        try {
+            Skull skull = (Skull) block.getState();
+            owner = skull.getOwnerProfile();
+        } catch (Exception e) {
+            //
+        }
+
+        boolean silkTouched = false;
+
+        if(event.getPlayer().isValid()){
+            if (event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
+                silkTouched = true;
+            }
+        }
+
         block.setType(Material.AIR);
-        block.getWorld().dropItemNaturally(location, playerHeadData.get().toItemStack());
+        block.getWorld().dropItemNaturally(location, playerHeadData.get().toItemStack(owner, silkTouched));
         this.cacheHandler.removePlayerHeadData(location);
     }
 }

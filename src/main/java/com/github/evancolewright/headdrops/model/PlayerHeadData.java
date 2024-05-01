@@ -4,17 +4,16 @@ import com.github.evancolewright.headdrops.utilities.HeadUtils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.Getter;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.profile.PlayerProfile;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 @Getter
 public final class PlayerHeadData
@@ -52,8 +51,8 @@ public final class PlayerHeadData
         );
     }
 
-    public ItemStack toItemStack()
+    public ItemStack toItemStack(PlayerProfile owner, boolean silkTouched)
     {
-        return HeadUtils.createPlayerHead(this.owningPlayerUUID, null, this.displayName, this.lore);
+        return HeadUtils.createPlayerHead(this.owningPlayerUUID, null, this.displayName, this.lore, owner, silkTouched);
     }
 }
