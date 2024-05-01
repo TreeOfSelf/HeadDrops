@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -116,7 +117,16 @@ public final class HeadDropsListeners implements Listener
             }
         }
     }
-     
+
+    @EventHandler
+    public void onHeadChanged(EntityChangeBlockEvent event){
+        Block block = event.getBlock();
+        Location location = block.getLocation();
+        Optional<PlayerHeadData> playerHeadData = this.cacheHandler.getPlayerHeadData(location);
+        if (playerHeadData.isPresent()) {
+            event.setCancelled(true);
+        }
+    }
 
     @EventHandler
     public void onHeadExploded(EntityExplodeEvent event)
