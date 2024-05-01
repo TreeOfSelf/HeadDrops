@@ -116,6 +116,7 @@ public final class HeadDropsListeners implements Listener
             }
         }
     }
+     
 
     @EventHandler
     public void onHeadExploded(EntityExplodeEvent event)
